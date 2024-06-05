@@ -1,0 +1,29 @@
+building_name: kabam_office
+levels:
+  L1:
+    lanes:
+    - - 0
+      - 1
+      - {door_name: lab_entrance_door_right, is_bidirectional: false, speed_limit: 0}
+    - - 1
+      - 2
+      - {is_bidirectional: false, speed_limit: 0}
+    - - 2
+      - 3
+      - {door_name: lab_entrance_door_left, is_bidirectional: false, speed_limit: 0}
+    - - 3
+      - 0
+      - {is_bidirectional: false, speed_limit: 0}
+    vertices:
+    - - 1.7782732024514007
+      - -6.948913915578813
+      - {name: ''}
+    - - 24.08566297204254
+      - -6.872960068283951
+      - {name: ''}
+    - - 24.11095590340457
+      - -7.480665899851638
+      - {name: ''}
+    - - 1.7782732024514007
+      - -7.607243136474944
+      - {name: ''}
