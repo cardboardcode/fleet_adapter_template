@@ -112,12 +112,13 @@ def main(argv=sys.argv):
         server_uri = args.server_uri
 
     fleet_config.server_uri = server_uri
-    fleet_handle = adapter.add_easy_fleet(fleet_config)
 
     # Configure the transforms between robot and RMF frames
     for level, coords in config_yaml['reference_coordinates'].items():
         tf = compute_transforms(level, coords, node)
         fleet_config.add_robot_coordinates_transformation(level, tf)
+
+    fleet_handle = adapter.add_easy_fleet(fleet_config)
 
     # Initialize robot API for this fleet
     fleet_mgr_yaml = config_yaml['fleet_manager']
@@ -225,7 +226,7 @@ class RobotAdapter:
         if self.execution is not None:
             if self.execution.identifier.is_same(activity):
                 self.execution = None
-                self.stop(self.name)
+                self.api.stop(self.name)
 
     def execute_action(self, category: str, description: dict, execution):
         ''' Trigger a custom action you would like your robot to perform.
