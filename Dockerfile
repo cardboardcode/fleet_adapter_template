@@ -1,28 +1,19 @@
-FROM ghcr.io/open-rmf/rmf/rmf_demos:latest
+FROM ros:jazzy-ros-base
+ENV DEBIAN_FRONTEND=noninteractive
+ENV RMF2_WS=/ros2_ws
 
-RUN apt-get update \
-  && apt-get install -y \
-    cmake \
-    curl \
-    git \
-    python3-colcon-common-extensions \
-    python3-vcstool \
-    qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools \
-    wget \
+RUN apt-get update && apt-get install -y \
+    ros-jazzy-rmf-dev \
+    build-essential \
+    python3-rosdep \
     python3-pip \
-  && pip3 install flask-socketio fastapi uvicorn nudged \
+  && pip3 install --break-system-packages flask-socketio fastapi uvicorn nudged \
   && rm -rf /var/lib/apt/lists/*
 
 # setup keys
-WORKDIR /fleet_adapter_ws
-COPY . src
-RUN rosdep update --rosdistro $ROS_DISTRO
-
-# This replaces: wget https://raw.githubusercontent.com/open-rmf/rmf/main/rmf.repos
-ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /ros2_ws
+COPY fleet_adapter_template src/fleet_adapter_template
 RUN apt-get update \
-    && apt-get upgrade -y \
-    && rosdep update \
     && rosdep install --from-paths src --ignore-src --rosdistro $ROS_DISTRO -yr \
     && rm -rf /var/lib/apt/lists/*
 
@@ -31,7 +22,7 @@ RUN . /opt/ros/$ROS_DISTRO/setup.sh \
   && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 # cleanup
-RUN sed -i '$isource "/fleet_adapter_ws/install/setup.bash"' /ros_entrypoint.sh
+RUN sed -i '$isource "/$RMF2_WS/install/setup.bash"' /ros_entrypoint.sh
 
 ENTRYPOINT ["/ros_entrypoint.sh"]
 CMD ros2 run fleet_adapter_template fleet_adapter -c /fleet_adapter_ws/src/fleet_adapter_template/config.yaml -n /fleet_adapter_ws/src/fleet_adapter_template/0.yaml -s ws://localhost:8000
