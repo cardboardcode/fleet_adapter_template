@@ -187,8 +187,7 @@ class RobotAdapter:
         self.api = api
         self.fleet_handle = fleet_handle
         self.fleet_config = fleet_config
-        self.transforms = self.fleet_config.transformations_to_robot_coordinates
-        self.node.get_logger().info(f"self.transform_rmf_to_robot = {self.transforms}")
+        self.rmf_to_robot_transforms = self.fleet_config.transformations_to_robot_coordinates
 
     def update(self, state):
         activity_identifier = None
@@ -219,9 +218,13 @@ class RobotAdapter:
             f'on map [{destination.map}]'
         )
 
+        self.node.get_logger().info(f'Converting RMF to Robot coordinates...')
+        rmf_pos = destination.position
+        robot_pos = self.rmf_to_robot_transforms[destination.map].apply(rmf_pos)
+
         self.api.navigate(
             self.name,
-            destination.position,
+            robot_pos,
             destination.map,
             destination.speed_limit
         )
@@ -261,9 +264,13 @@ def update_robot(robot: RobotAdapter):
         robot.node.get_logger().warn(f"Unable to retrieve data of {robot.name}. Skipping update...")
         return
 
+    robot.node.get_logger().info(f'Converting Robot to RMF coordinates...')
+    robot_pos = data.position
+    rmf_pos = robot.rmf_to_robot_transforms[data.map].apply_inverse(robot_pos)
+
     state = rmf_easy.RobotState(
         data.map,
-        data.position,
+        rmf_pos,
         data.battery_soc
     )
 
