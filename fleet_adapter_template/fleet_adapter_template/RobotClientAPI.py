@@ -26,7 +26,8 @@ class RobotAPI:
     # The constructor below accepts parameters typically required to submit
     # http requests. Users should modify the constructor as per the
     # requirements of their robot's API
-    def __init__(self, config_yaml):
+    def __init__(self, node, config_yaml):
+        self.node
         self.prefix = config_yaml['prefix']
         self.user = config_yaml['user']
         self.password = config_yaml['password']
