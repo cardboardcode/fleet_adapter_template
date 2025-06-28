@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import time
 
 '''
     The RobotAPI class is a wrapper for API calls to the robot. Here users
@@ -27,19 +28,29 @@ class RobotAPI:
     # http requests. Users should modify the constructor as per the
     # requirements of their robot's API
     def __init__(self, node, config_yaml):
-        self.node
+        self.node = node
         self.prefix = config_yaml['prefix']
         self.user = config_yaml['user']
         self.password = config_yaml['password']
         self.timeout = 5.0
         self.debug = False
 
-    def check_connection(self):
+        # Attempt connection to robot API server.
+        # If unable to initially, keep trying until timeout reaches.
+        end_time = time.time() + self.timeout
+        while not self.is_able_to_connect():
+            if time.time() > end_time:
+                self.node.get_logger().error(f"Unable to connect to Robot API Server after {self.timeout} seconds. Exiting...")
+                assert self.is_able_to_connect() is True
+            time.sleep(1)
+
+
+    def is_able_to_connect(self) -> bool:
         ''' Return True if connection to the robot API server is successful '''
         # ------------------------ #
         # IMPLEMENT YOUR CODE HERE #
         # ------------------------ #
-        return True
+        return False
 
     def navigate(
         self,
