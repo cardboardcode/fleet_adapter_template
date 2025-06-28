@@ -25,4 +25,4 @@ RUN . /opt/ros/$ROS_DISTRO/setup.sh \
 RUN sed -i '$isource "/$RMF2_WS/install/setup.bash"' /ros_entrypoint.sh
 
 ENTRYPOINT ["/ros_entrypoint.sh"]
-CMD ros2 run fleet_adapter_template fleet_adapter -c /ros2_ws/src/fleet_adapter_template/config.yaml -n /ros2_ws/src/fleet_adapter_template/0.yaml -s ws://localhost:8000
+CMD ["bash"]

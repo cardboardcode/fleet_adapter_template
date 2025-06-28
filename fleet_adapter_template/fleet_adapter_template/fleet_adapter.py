@@ -128,7 +128,7 @@ def main(argv=sys.argv):
     for robot_name in fleet_config.known_robots:
         robot_config = fleet_config.get_known_robot_configuration(robot_name)
         robots[robot_name] = RobotAdapter(
-            robot_name, robot_config, node, api, fleet_handle
+            robot_name, robot_config, node, api, fleet_handle, fleet_config
         )
 
     update_period = 1.0/config_yaml['rmf_fleet'].get(
@@ -176,7 +176,8 @@ class RobotAdapter:
         configuration,
         node,
         api: RobotAPI,
-        fleet_handle
+        fleet_handle,
+        fleet_config
     ):
         self.name = name
         self.execution = None
@@ -185,6 +186,9 @@ class RobotAdapter:
         self.node = node
         self.api = api
         self.fleet_handle = fleet_handle
+        self.fleet_config = fleet_config
+        self.transforms = self.fleet_config.transformations_to_robot_coordinates
+        self.node.get_logger().info(f"self.transform_rmf_to_robot = {self.transforms}")
 
     def update(self, state):
         activity_identifier = None
@@ -254,6 +258,7 @@ def parallel(f):
 def update_robot(robot: RobotAdapter):
     data = robot.api.get_data(robot.name)
     if data is None:
+        robot.node.get_logger().warn(f"Unable to retrieve data of {robot.name}. Skipping update...")
         return
 
     state = rmf_easy.RobotState(
