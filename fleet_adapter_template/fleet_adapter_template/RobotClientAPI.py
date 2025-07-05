@@ -63,6 +63,7 @@ class RobotAPI:
             and theta are in the robot's coordinate convention. This function
             should return True if the robot has accepted the request,
             else False '''
+        self.node.get_logger().info(f"Navigating to x:{pose[0]} y:{pose[1]} theta:{pose[2]}...")
         # ------------------------ #
         # IMPLEMENT YOUR CODE HERE #
         # ------------------------ #
